@@ -41,8 +41,8 @@ export async function bootstrap() {
   app.use(CorrelationIdMiddleware());
 
   const config = new DocumentBuilder()
-    .setTitle('ChiselTime API')
-    .setDescription('API documentation for ChiselTime')
+    .setTitle('OpenPoker API')
+    .setDescription('API documentation for OpenPoker')
     .setVersion('0.1')
     .build();
   const document = SwaggerModule.createDocument(app, config);

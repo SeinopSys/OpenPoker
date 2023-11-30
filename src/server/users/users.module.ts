@@ -3,10 +3,10 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DiscordUsersModule } from '../discord-users/discord-users.module';
+import { GithubUsersModule } from '../github-users/github-users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), DiscordUsersModule],
+  imports: [TypeOrmModule.forFeature([User]), GithubUsersModule],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

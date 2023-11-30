@@ -1,8 +1,4 @@
 export const KnownSettings = {
-  timezone: 'timezone',
-  ephemeral: 'ephemeral',
-  header: 'header',
-  columns: 'columns',
-  format: 'format',
+  language: 'language',
 } as const;
 export type KnownSettings = (typeof KnownSettings)[keyof typeof KnownSettings];

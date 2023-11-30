@@ -13,7 +13,7 @@ if (!envFilePath) {
   process.exit(1);
 }
 
-const { PUBLIC_HOST, DISCORD_CLIENT_ID, DISCORD_CLIENT_SCOPES } = process.env;
+const { PUBLIC_HOST, GITHUB_CLIENT_ID, GITHUB_CLIENT_SCOPES } = process.env;
 
 /**
  * Type-safe process.env
@@ -21,8 +21,8 @@ const { PUBLIC_HOST, DISCORD_CLIENT_ID, DISCORD_CLIENT_SCOPES } = process.env;
 export const clientEnv = (() => {
   const values = {
     PUBLIC_HOST,
-    DISCORD_CLIENT_ID,
-    DISCORD_CLIENT_SCOPES,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SCOPES,
   };
 
   type Values = typeof values;

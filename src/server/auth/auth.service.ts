@@ -1,11 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DiscordUsersService } from '../discord-users/discord-users.service';
-import { RESTGetAPIUserResult, Routes } from 'discord-api-types/v10';
+import { GithubUsersService } from '../github-users/github-users.service';
 import { UsersService } from '../users/users.service';
 import { EntityManager } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { DiscordUser } from '../discord-users/entities/discord-user.entity';
-import { DiscordRestService } from '../discord-rest/discord-rest.service';
+import { GithubUser } from '../github-users/entities/github-user.entity';
+import { GithubRestService } from '../github-rest/github-rest.service';
+import {
+  RestEndpointMethodTypes,
+} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
 
 @Injectable()
 export class AuthService {
@@ -13,48 +15,43 @@ export class AuthService {
 
   constructor(
     private readonly usersService: UsersService,
-    private readonly discordUsersService: DiscordUsersService,
-    private readonly discordRestService: DiscordRestService,
+    private readonly githubUsersService: GithubUsersService,
+    private readonly githubRestService: GithubRestService,
     private readonly entityManager: EntityManager,
   ) {
-    this.logger.debug(`Creating default Discord API REST client…`);
+    this.logger.debug(`Creating default GitHub API REST client…`);
   }
 
-  getDiscordUserInfo(params: { userId?: string; accessToken?: string }) {
-    this.logger.debug(`Getting Discord API REST client…`);
+  getGithubUserInfo(params: { userId?: string; accessToken?: string }) {
+    this.logger.debug(`Getting GitHub API REST client…`);
     const effectiveClient = params.accessToken
-      ? this.discordRestService.clientFactory(params.accessToken)
-      : this.discordRestService.defaultClient;
+      ? this.githubRestService.clientFactory(params.accessToken)
+      : this.githubRestService.defaultClient;
     this.logger.debug(
-      `Retrieving Discord user info ${
+      `Retrieving GitHub user info ${
         params.accessToken ? 'via access token' : `for user ID ${params.userId}`
       }…`,
     );
-    return effectiveClient.get(Routes.user(params.userId), {
-      authPrefix: params.accessToken ? 'Bearer' : undefined,
-    }) as Promise<RESTGetAPIUserResult>;
+    return effectiveClient.rest.users.getAuthenticated();
   }
 
-  async saveDiscordUserInfo(
-    apiUserInfo: RESTGetAPIUserResult,
+  async saveGithubUserInfo(
+    apiUserInfo: RestEndpointMethodTypes['users']['getAuthenticated']['response'],
     options: {
       existingUser?: User;
       accessToken?: string;
       refreshToken?: string;
       scopes?: string;
     },
-  ): Promise<DiscordUser> {
-    this.logger.debug(`Creating Discord user information object…`);
-    const discordUser = await this.discordUsersService.create(
+  ): Promise<GithubUser> {
+    this.logger.debug(`Creating GitHub user information object…`);
+    let githubUser = await this.githubUsersService.create(
       {
-        id: apiUserInfo.id,
-        name: apiUserInfo.username,
-        displayName:
-          'global_name' in apiUserInfo
-            ? (apiUserInfo.global_name as string)
-            : null,
-        discriminator: parseInt(apiUserInfo.discriminator, 10),
-        avatar: apiUserInfo.avatar,
+        id: apiUserInfo.data.id,
+        name: apiUserInfo.data.login,
+        displayName: apiUserInfo.data.name,
+        avatar: apiUserInfo.data.avatar_url,
+        gravatarId: apiUserInfo.data.gravatar_id,
         accessToken: options.accessToken ?? null,
         refreshToken: options.refreshToken ?? null,
         scopes: options.scopes ?? null,
@@ -62,58 +59,55 @@ export class AuthService {
       false,
     );
     this.logger.debug(
-      `Saving information for Discord user (${discordUser.id})…`,
+      `Saving information for GitHub user (${githubUser.id})…`,
     );
     await this.entityManager.transaction(async (em) => {
       if (options.existingUser) {
         this.logger.debug(
-          `Linking Discord user ${discordUser.id} to existing user ${options.existingUser.id}…`,
+          `Linking GitHub user ${githubUser.id} to existing user ${options.existingUser.id}…`,
         );
-        discordUser.user = Promise.resolve(options.existingUser);
+        githubUser.user = Promise.resolve(options.existingUser);
       } else {
-        await this.usersService.createForDiscordUser(discordUser);
+        githubUser = await this.usersService.createForGithubUser(githubUser);
       }
 
-      await em.save(discordUser);
+      await em.save(githubUser);
     });
     this.logger.debug(
-      `Information for Discord user (${discordUser.id}) saved successfully`,
+      `Information for GitHub user (${githubUser.id}) saved successfully`,
     );
-    return discordUser;
+    return githubUser;
   }
 
-  async updateDiscordUserInfo(
-    apiUserInfo: RESTGetAPIUserResult,
-    discordUser: DiscordUser,
+  async updateGithubUserInfo(
+    apiUserInfo: RestEndpointMethodTypes['users']['getAuthenticated']['response'],
+    githubUser: GithubUser,
     options: {
       accessToken?: string;
       refreshToken?: string;
       scopes?: string;
     },
-  ): Promise<DiscordUser> {
-    this.logger.debug(`Updating Discord user (${discordUser.id})…`);
-    const result = await this.discordUsersService.update(discordUser, {
-      name: apiUserInfo.username,
-      displayName:
-        'global_name' in apiUserInfo
-          ? (apiUserInfo.global_name as string)
-          : null,
-      discriminator: parseInt(apiUserInfo.discriminator, 10),
-      avatar: apiUserInfo.avatar,
+  ): Promise<GithubUser> {
+    this.logger.debug(`Updating GitHub user (${githubUser.id})…`);
+    const result = await this.githubUsersService.update(githubUser, {
+      name: apiUserInfo.data.login,
+      displayName: apiUserInfo.data.name,
+      avatar: apiUserInfo.data.avatar_url,
+      gravatarId: apiUserInfo.data.gravatar_id,
       accessToken: options.accessToken ?? null,
       refreshToken: options.refreshToken ?? null,
       scopes: options.scopes ?? null,
     });
-    const localUser = await discordUser.user;
+    const localUser = await githubUser.user;
     if (!localUser) {
-      await this.usersService.createForDiscordUser(discordUser);
-      await this.entityManager.save(discordUser);
+      await this.usersService.createForGithubUser(githubUser);
+      await this.entityManager.save(githubUser);
     }
     return result;
   }
 
-  async findUserFromDiscordId(discordId: string): Promise<DiscordUser | null> {
-    this.logger.debug(`Finding Discord user with ID ${discordId}…`);
-    return await this.discordUsersService.findOne(discordId);
+  async findUserById(githubId: number): Promise<GithubUser | null> {
+    this.logger.debug(`Finding GitHub user with ID ${githubId}…`);
+    return await this.githubUsersService.findOne(githubId);
   }
 }

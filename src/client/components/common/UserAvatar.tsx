@@ -6,13 +6,13 @@ import { usePreloadedImage } from '../../hooks/usePreloadedImage';
 
 const UserAvatarComponent: FC<{ userData: UserInfoDto }> = ({ userData }) => {
   const avatarUrl: string | undefined = useMemo(() => {
-    if (userData.discordUsers.length > 0) {
-      const discordAvatar = userData.discordUsers.find((du) => du.avatarUrl);
-      if (discordAvatar) {
-        return discordAvatar.avatarUrl;
+    if (userData.githubUsers.length > 0) {
+      const githubAvatar = userData.githubUsers.find((du) => du.avatarUrl);
+      if (githubAvatar) {
+        return githubAvatar.avatarUrl;
       }
     }
-  }, [userData.discordUsers]);
+  }, [userData.githubUsers]);
 
   const { src, loading } = usePreloadedImage(avatarUrl);
 

@@ -13,12 +13,7 @@ import { serverEnv } from '../server-env';
 
 @Controller()
 export class ViewController {
-  constructor(private viewService: ViewService) {}
-
-  @Get('/discord')
-  @Redirect(serverEnv.DISCORD_INVITE_URL, HttpStatus.TEMPORARY_REDIRECT)
-  public discordInvite() {
-    // noop
+  constructor(private viewService: ViewService) {
   }
 
   @Get('*')

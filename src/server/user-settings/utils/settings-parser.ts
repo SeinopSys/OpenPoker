@@ -1,9 +1,10 @@
 import { KnownSettings } from '../model/known-settings.enum';
 import { isValidTimeZone } from '../../utils/timezone';
 import { SettingTypes } from '../entities/user-setting.entity';
-import { ColumnOptions } from '../model/column-options.enum';
-import { FormatOptions } from '../model/format-options.model';
 import { Logger } from '@nestjs/common';
+
+// TODO Multi-language support
+const isValidLanguage = (value: string) => value === 'en';
 
 /**
  * Takes the raw user-supplied setting value and does validation &
@@ -15,25 +16,13 @@ export const settingsParser: {
     logger: Logger,
   ) => SettingTypes[k] | null;
 } = {
-  [KnownSettings.timezone]: (value) => {
+  [KnownSettings.language]: (value) => {
     if (typeof value !== 'string') return null;
 
-    if (!isValidTimeZone(value)) {
+    if (!isValidLanguage(value)) {
       throw new Error('The provided timezone is invalid');
     }
 
     return value;
   },
-  [KnownSettings.ephemeral]: (value) =>
-    typeof value === 'boolean' ? value : null,
-  [KnownSettings.header]: (value) =>
-    typeof value === 'boolean' ? value : null,
-  [KnownSettings.columns]: (value) =>
-    typeof value === 'string' && ColumnOptions.hasOwnProperty(value)
-      ? (value as ColumnOptions)
-      : null,
-  [KnownSettings.format]: (value) =>
-    typeof value === 'string' && FormatOptions.hasOwnProperty(value)
-      ? (value as FormatOptions)
-      : null,
 };

@@ -7,28 +7,18 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import type { DiscordUser } from '../../discord-users/entities/discord-user.entity';
+import type { GithubUser } from '../../github-users/entities/github-user.entity';
 import { KnownSettings } from '../model/known-settings.enum';
-import { ColumnOptions } from '../model/column-options.enum';
-import { FormatOptions } from '../model/format-options.model';
 
 export interface SettingTypes {
-  [KnownSettings.timezone]: string;
-  [KnownSettings.ephemeral]: boolean;
-  [KnownSettings.header]: boolean;
-  [KnownSettings.columns]: ColumnOptions;
-  [KnownSettings.format]: FormatOptions;
+  [KnownSettings.language]: string;
 }
 
 export const settingsPrimitiveTypes: Record<
   KnownSettings,
   'string' | 'boolean'
 > = {
-  [KnownSettings.timezone]: 'string',
-  [KnownSettings.ephemeral]: 'boolean',
-  [KnownSettings.header]: 'boolean',
-  [KnownSettings.columns]: 'string',
-  [KnownSettings.format]: 'string',
+  [KnownSettings.language]: 'string',
 };
 
 export const USER_SETTINGS_SETTING_MAX_LENGTH = 64;
@@ -38,13 +28,12 @@ export class UserSetting<Setting extends string = string> {
   @PrimaryColumn('uuid', { generated: 'uuid' })
   id: string;
 
-  @ManyToOne('DiscordUser', (user: DiscordUser) => user.settings, {
+  @ManyToOne('GithubUser', (user: GithubUser) => user.settings, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'discord_user_id' })
-  user: Promise<DiscordUser> | DiscordUser;
+  user: Promise<GithubUser> | GithubUser;
 
   @Column('character varying', {
     length: USER_SETTINGS_SETTING_MAX_LENGTH,
@@ -56,14 +45,12 @@ export class UserSetting<Setting extends string = string> {
   value: unknown;
 
   @CreateDateColumn({
-    name: 'created_at',
     type: 'timestamptz',
     default: () => 'now()',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    name: 'updated_at',
     type: 'timestamptz',
     default: () => 'now()',
     onUpdate: 'now()',

@@ -17,16 +17,16 @@ import { SessionUserGuard } from './guards/session-user.guard';
 export class AuthController {
   logger = new Logger(AuthController.name);
 
-  @Get('login/discord')
-  @UseGuards(AuthGuard('discord'))
+  @Get('login/github')
+  @UseGuards(AuthGuard('github'))
   @Redirect('/', HttpStatus.TEMPORARY_REDIRECT)
-  loginWithDiscord() {
+  loginWithGithub() {
     // Because this uses the AuthGuard we do not need to manually redirect to the authorization URL
   }
 
-  @Get('discord')
-  @UseGuards(AuthGuard('discord'))
-  async getUserFromDiscordLogin(@Req() req: Request, @Res() res: Response) {
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  async getUserFromGithubLogin(@Req() req: Request, @Res() res: Response) {
     if (req.user) {
       this.logger.debug('Saving userId to session', req.user);
       req.session.userId = req.user.id;
@@ -37,12 +37,6 @@ export class AuthController {
       );
     }
 
-    res.status(HttpStatus.TEMPORARY_REDIRECT).redirect('/');
-  }
-
-  @Get('add-bot')
-  @UseGuards(AuthGuard('discord-bot'))
-  async addBot(@Req() req: Request, @Res() res: Response) {
     res.status(HttpStatus.TEMPORARY_REDIRECT).redirect('/');
   }
 

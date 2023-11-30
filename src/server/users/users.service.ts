@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DiscordUser } from '../discord-users/entities/discord-user.entity';
+import { GithubUser } from '../github-users/entities/github-user.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,33 +12,34 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) {}
+  ) {
+  }
 
   async create(createUserDto: CreateUserDto, save = true) {
-    const user = new User();
+    let user = new User();
     user.name = createUserDto.name;
     if (save) {
-      await this.userRepository.save(user);
+      user = await this.userRepository.save(user);
     }
     return user;
   }
 
-  async createForDiscordUser(discordUser: DiscordUser) {
+  async createForGithubUser(githubUser: GithubUser): Promise<GithubUser> {
     this.logger.debug(
-      `Creating new local user for Discord user (${discordUser.id})…`,
+      `Creating new local user for GitHub user (${githubUser.id})…`,
     );
     let appUser = await this.create(
       {
-        name: discordUser.name,
+        name: githubUser.name,
       },
-      false,
+      true,
     );
-    appUser = await this.userRepository.save(appUser);
 
     this.logger.debug(
-      `Linking Discord user (${discordUser.id}) to new user (${appUser.id})…`,
+      `Linking GitHub user (${githubUser.id}) to new user (${appUser.id})…`,
     );
-    discordUser.user = Promise.resolve(appUser);
+    githubUser.user = Promise.resolve(appUser);
+    return githubUser;
   }
 
   findOne(id: string) {

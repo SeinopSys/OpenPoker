@@ -1,9 +1,6 @@
-# ChiselTime
+# OpenPoker
 
-ChiselTime is an application intended to help with automating message updates to bridge the gap in Discord's timestamps
-feature which does not allow for things like specifying "5pm Friday" and have it actually point to the specific date and
-time each week. This is done by creating a message via the bot's slash commands, which is then updated at a configurable
-interval.
+Helps create and run an SCRUM planning poker session for estimations
 
 ## Attributions
 

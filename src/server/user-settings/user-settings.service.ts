@@ -6,7 +6,7 @@ import {
   SettingTypes,
   UserSetting,
 } from './entities/user-setting.entity';
-import { DiscordUser } from '../discord-users/entities/discord-user.entity';
+import { GithubUser } from '../github-users/entities/github-user.entity';
 import { KnownSettings } from './model/known-settings.enum';
 import { settingsParser } from './utils/settings-parser';
 import { RedisService } from '@liaoliaots/nestjs-redis';
@@ -19,26 +19,27 @@ export class UserSettingsService {
     @InjectRepository(UserSetting)
     private readonly userSettingsRepository: Repository<UserSetting>,
     private readonly redisService: RedisService,
-  ) {}
+  ) {
+  }
 
-  async findAll(user: DiscordUser | string) {
+  async findAll(user: GithubUser | number) {
     return await this.userSettingsRepository.findBy({
-      user: { id: typeof user === 'string' ? user : user.id },
+      user: { id: typeof user === 'number' ? user : user.id },
     });
   }
 
   async getSetting<Setting extends KnownSettings>(
-    user: DiscordUser | string,
+    user: GithubUser | number,
     setting: Setting,
   ): Promise<UserSetting<Setting> | null> {
     return (await this.userSettingsRepository.findOneBy({
-      user: { id: typeof user === 'string' ? user : user.id },
+      user: { id: typeof user === 'number' ? user : user.id },
       setting,
     })) as UserSetting<Setting> | null;
   }
 
   async getSettingValue<Setting extends KnownSettings>(
-    user: DiscordUser | string,
+    user: GithubUser | number,
     setting: Setting,
   ): Promise<SettingTypes[Setting] | null> {
     const record = await this.getSetting<Setting>(user, setting);
@@ -46,12 +47,12 @@ export class UserSettingsService {
     return record ? UserSetting.getDecodedValue(record) : null;
   }
 
-  protected getSettingsCacheKey(userId: string) {
+  protected getSettingsCacheKey(userId: number) {
     return `user-settings-${userId}`;
   }
 
   async setSetting<Setting extends KnownSettings>(
-    discordUser: DiscordUser,
+    githubUser: GithubUser,
     setting: Setting,
     value: unknown,
   ): Promise<UserSetting<Setting> | null> {
@@ -70,7 +71,7 @@ export class UserSettingsService {
       }
     }
 
-    let record = await this.getSetting(discordUser, setting);
+    let record = await this.getSetting(githubUser, setting);
     if (record) {
       if (parsedValue === null) {
         await this.userSettingsRepository.remove(record);
@@ -84,13 +85,13 @@ export class UserSettingsService {
       }
     } else if (parsedValue !== null) {
       record = new UserSetting<Setting>();
-      record.user = discordUser;
+      record.user = githubUser;
       record.setting = setting;
       record.value = parsedValue;
       await this.userSettingsRepository.save(record);
     }
 
-    const cacheKey = this.getSettingsCacheKey(discordUser.id);
+    const cacheKey = this.getSettingsCacheKey(githubUser.id);
     try {
       const count = await this.redisService.getClient().del(cacheKey);
       if (count > 0) {

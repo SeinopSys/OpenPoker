@@ -7,12 +7,11 @@ import { SITE_TITLE } from '../config';
 import { clientEnv } from '../client-env';
 import { publicAssetPath } from '../utils/public-asset-path';
 import { UserInfo } from '../components/shell/UserInfo';
-import { TemplateList } from '../components/templates/TemplateList';
 
 const openGraph: Metadata['openGraph'] = {
   title: SITE_TITLE,
   description:
-    'An application that helps with automating Discord message updates',
+    'Helps create and run an SCRUM planning poker session for estimations',
   images: publicAssetPath('/social.png'),
   type: 'website',
   siteName: SITE_TITLE,
@@ -40,7 +39,7 @@ const Page: NextPage = () => {
           />
           <span>{SITE_TITLE}</span>
         </h1>
-        <TemplateList />
+        <p>Helps create and run an SCRUM planning poker session for estimations</p>
       </div>
       <UserInfo />
     </Fragment>

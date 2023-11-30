@@ -1,1 +1,1 @@
-export const SITE_TITLE = 'ChiselTime';
+export const SITE_TITLE = 'OpenPoker';

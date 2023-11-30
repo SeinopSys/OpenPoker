@@ -1,31 +1,31 @@
 import { UserSetting } from '../user-settings/entities/user-setting.entity';
-import { DiscordUsersService } from '../discord-users/discord-users.service';
+import { GithubUsersService } from '../github-users/github-users.service';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { KnownSettings } from '../user-settings/model/known-settings.enum';
 import { Emoji } from '../common/emoji';
 
 export const updateSetting = async <Setting extends KnownSettings>(
-  discordUsersService: DiscordUsersService,
+  githubUsersService: GithubUsersService,
   userSettingsService: UserSettingsService,
-  userId: string,
+  userId: number,
   setting: Setting,
   value: unknown,
 ) => {
-  let discordUser = await discordUsersService.findOne(userId);
-  if (!discordUser) {
-    discordUser = await discordUsersService.create({
+  let githubUser = await githubUsersService.findOne(userId);
+  if (!githubUser) {
+    githubUser = await githubUsersService.create({
       id: userId,
       name: 'Unknown User',
       avatar: null,
       displayName: null,
-      discriminator: 0,
+      gravatarId: null,
     });
   }
 
   let settingRecord: UserSetting | null;
   try {
     settingRecord = await userSettingsService.setSetting(
-      discordUser,
+      githubUser,
       setting,
       value,
     );
@@ -40,9 +40,9 @@ export const updateSetting = async <Setting extends KnownSettings>(
   const outcome =
     settingRecord !== null
       ? `updated to \`${JSON.stringify(settingRecord.value).replace(
-          /`/,
-          '\\`',
-        )}\``
+        /`/,
+        '\\`',
+      )}\``
       : 'reset to default';
 
   return {

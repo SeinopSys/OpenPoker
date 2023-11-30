@@ -1,11 +1,11 @@
 {
   "apps": [
     {
-      "name": "ChiselTime",
+      "name": "OpenPoker",
       "script": "npm run start:prod",
       "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
       "env": {
-        "PORT": "6902"
+        "PORT": "6905"
       }
     }
   ]

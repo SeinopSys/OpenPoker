@@ -9,9 +9,13 @@ export class UserSettings1689874461493 implements MigrationInterface {
       "setting" character varying(64) NOT NULL,
       "value" json NOT NULL,
       "userId" bigint NOT NULL,
-      CONSTRAINT "PK_00f004f5922a0744d174530d639" PRIMARY KEY ("id"))`);
+      "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+      "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+      CONSTRAINT "PK_00f004f5922a0744d174530d639" PRIMARY KEY ("id")
+    )`);
     await queryRunner.query(
-      `ALTER TABLE "user_settings" ADD CONSTRAINT "FK_986a2b6d3c05eb4091bb8066f78" FOREIGN KEY ("userId") REFERENCES "discord_users" ("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+      `ALTER TABLE "user_settings"
+        ADD CONSTRAINT "FK_986a2b6d3c05eb4091bb8066f78" FOREIGN KEY ("userId") REFERENCES "github_users" ("id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
   }
 

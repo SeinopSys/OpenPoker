@@ -1,16 +1,10 @@
 'use client';
 
-import styles from '../../scss/UserInfo.module.scss';
-import { FC, useMemo } from 'react';
-import { UserAvatar } from '../common/UserAvatar';
-import { LoadingIndicator } from '../common/LoadingIndicator';
+import { FC } from 'react';
 import { useUserInfo } from '../../hooks/useUserInfo';
-
-interface TierData {
-  className?: string;
-  label: string;
-  supportLevel?: number;
-}
+import styles from '../../scss/UserInfo.module.scss';
+import { LoadingIndicator } from '../common/LoadingIndicator';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const UserInfo: FC = () => {
   const result = useUserInfo();

@@ -39,7 +39,9 @@ const Page: NextPage = () => {
           />
           <span>{SITE_TITLE}</span>
         </h1>
-        <p>Helps create and run an SCRUM planning poker session for estimations</p>
+        <p>
+          Helps create and run an SCRUM planning poker session for estimations
+        </p>
       </div>
       <UserInfo />
     </Fragment>

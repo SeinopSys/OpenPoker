@@ -24,4 +24,22 @@
       margin-right: .25em;
     }
   }
+
+  .construction {
+    padding: .5em;
+    border-radius: .5em;
+    /* https://css-tricks.com/snippets/css/css-repeating-gradients/ */
+    background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(yellow, .05),
+        rgba(yellow, .05) 10px,
+        rgba(black, .05) 10px,
+        rgba(black, .05) 1em
+    );
+    background-repeat: repeat;
+    color: black;
+    font-weight: bold;
+    font-size: 1.2em;
+    border: .125em solid;
+  }
 }

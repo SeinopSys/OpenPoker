@@ -25,6 +25,14 @@ export const UserInfo: FC = () => {
       ) : (
         <a href="/auth/login/github">Login</a>
       )}
+      <span className={styles.divider} />
+      <a
+        href="https://github.com/SeinopSys/OpenPoker"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        View source
+      </a>
     </div>
   );
 };

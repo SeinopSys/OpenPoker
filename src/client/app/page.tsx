@@ -11,7 +11,7 @@ import { UserInfo } from '../components/shell/UserInfo';
 const openGraph: Metadata['openGraph'] = {
   title: SITE_TITLE,
   description:
-    'Helps create and run an SCRUM planning poker session for estimations',
+    'Helps create and run a SCRUM planning poker session for estimations',
   images: publicAssetPath('/social.png'),
   type: 'website',
   siteName: SITE_TITLE,
@@ -40,7 +40,11 @@ const Page: NextPage = () => {
           <span>{SITE_TITLE}</span>
         </h1>
         <p>
-          Helps create and run an SCRUM planning poker session for estimations
+          Helps create and run a SCRUM planning poker session for estimations
+        </p>
+
+        <p className={styles.construction}>
+          🚧 Website still under construction! 🚧
         </p>
       </div>
       <UserInfo />

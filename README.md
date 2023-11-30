@@ -1,6 +1,6 @@
 # OpenPoker
 
-Helps create and run an SCRUM planning poker session for estimations
+Helps create and run a SCRUM planning poker session for estimations
 
 ## Attributions
 

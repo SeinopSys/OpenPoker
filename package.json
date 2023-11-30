@@ -1,7 +1,7 @@
 {
   "name": "@seinopsys/openpoker",
   "version": "0.1.0",
-  "description": "Helps create and run an SCRUM planning poker session for estimations",
+  "description": "Helps create and run a SCRUM planning poker session for estimations",
   "author": "SeinopSys <david@seinopsys.dev> (https://seinopsys.dev)",
   "private": true,
   "license": "UNLICENSED",

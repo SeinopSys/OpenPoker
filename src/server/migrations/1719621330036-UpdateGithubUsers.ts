@@ -9,7 +9,7 @@ export class UpdateGithubUsers1719621330036 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "github_users"
-        ALTER COLUMN "name" SET DATA TYPE character varying(32), SET NOT NULL`,
+        ALTER COLUMN "name" SET DATA TYPE character varying(32)`,
     );
     await queryRunner.query(
       `ALTER TABLE "github_users"
@@ -45,7 +45,7 @@ export class UpdateGithubUsers1719621330036 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "github_users"
-        ALTER COLUMN "name" SET DATA TYPE character varying(60), SET NOT NULL`,
+        ALTER COLUMN "name" SET DATA TYPE character varying(60)`,
     );
     await queryRunner.query(`ALTER TABLE "github_users"
       ADD CONSTRAINT "FK_a99965459e40e9afc2e30bd6975" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);

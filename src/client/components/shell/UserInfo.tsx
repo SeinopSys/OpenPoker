@@ -3,8 +3,9 @@
 import { FC } from 'react';
 import { useUserInfo } from '../../hooks/useUserInfo';
 import styles from '../../scss/UserInfo.module.scss';
-import { LoadingIndicator } from '../common/LoadingIndicator';
+import { StatusIndicator } from '../common/StatusIndicator';
 import { UserAvatar } from '../common/UserAvatar';
+import { GatewayStatus } from './GatewayStatus';
 
 export const UserInfo: FC = () => {
   const result = useUserInfo();
@@ -16,14 +17,23 @@ export const UserInfo: FC = () => {
           <UserAvatar userData={result.data} />
           <span className={styles.username}>{result.data.name}</span>
           <span className={styles.divider} />
+          <GatewayStatus />
+          <span className={styles.divider} />
           <form action="/auth/logout" method="POST" className={styles.logout}>
             <button>Logout</button>
           </form>
         </>
-      ) : result.isLoading ? (
-        <LoadingIndicator />
       ) : (
-        <a href="/auth/login/github">Login</a>
+        <>
+          {result.isLoading && (
+            <>
+              <StatusIndicator />
+
+              <span className={styles.divider} />
+            </>
+          )}
+          <a href="/auth/login/github">Login</a>
+        </>
       )}
       <span className={styles.divider} />
       <a

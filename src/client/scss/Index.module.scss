@@ -8,21 +8,7 @@
   text-align: center;
 
   h1 {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    line-height: 1em;
-    margin-bottom: 1rem;
-    user-select: none;
-    font-weight: normal;
-
-    img {
-      width: 1em;
-      height: 1em;
-      margin-right: .25em;
-    }
+    margin: 0 0 1rem;
   }
 
   .construction {

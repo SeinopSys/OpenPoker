@@ -6,6 +6,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Room } from '../../rooms/entities/room.entity';
 import { USER_NAME_MAX_LENGTH } from '../dto/create-user.dto';
 import type { GithubUser } from '../../github-users/entities/github-user.entity';
 
@@ -35,8 +36,8 @@ export class User {
   })
   githubUsers: GithubUser[];
 
-  getMaxTemplateCount(): number {
-    // TODO Provide this based on support level
-    return 1;
-  }
+  @OneToMany('Room', (room: Room) => room.owner, {
+    eager: true,
+  })
+  rooms: Room[];
 }

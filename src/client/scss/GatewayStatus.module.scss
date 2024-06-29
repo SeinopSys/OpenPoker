@@ -1,0 +1,13 @@
+.gateway-status {
+  *, svg {
+    display: block;
+  }
+
+  &.error {
+    color: #800;
+  }
+
+  &.connected {
+    color: #080;
+  }
+}

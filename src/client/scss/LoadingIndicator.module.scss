@@ -3,6 +3,8 @@
 $full-revolution-time: 5s;
 
 .indicator {
+  --animation-name: rotate;
+  --fill-color: #{vars.$primary};
   fill-rule: evenodd;
   clip-rule: evenodd;
   stroke-linecap: round;
@@ -10,10 +12,10 @@ $full-revolution-time: 5s;
   stroke-miterlimit: 1.5;
   width: var(--size);
   height: var(--size);
-  animation: rotate ease-in-out 1s infinite;
+  animation: var(--animation-name) ease-in-out 1s infinite;
 
   path {
-    fill: vars.$primary;
+    fill: var(--fill-color);
   }
 }
 

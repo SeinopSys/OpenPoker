@@ -1,0 +1,13 @@
+.form {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+
+  .password {
+    width: 200px;
+    height: 120px;
+    max-width: 100%;
+    resize: none;
+  }
+}

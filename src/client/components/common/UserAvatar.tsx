@@ -1,7 +1,9 @@
+'use client';
+
 import { FC, memo, useMemo } from 'react';
 import { UserInfoDto } from '../../../server/users/dto/user-info.dto';
 import styles from '../../scss/UserAvatar.module.scss';
-import { LoadingIndicator } from './LoadingIndicator';
+import { StatusIndicator } from './StatusIndicator';
 import { usePreloadedImage } from '../../hooks/usePreloadedImage';
 
 const UserAvatarComponent: FC<{ userData: UserInfoDto }> = ({ userData }) => {
@@ -16,7 +18,7 @@ const UserAvatarComponent: FC<{ userData: UserInfoDto }> = ({ userData }) => {
 
   const { src, loading } = usePreloadedImage(avatarUrl);
 
-  if (loading) return <LoadingIndicator />;
+  if (loading) return <StatusIndicator />;
 
   if (!src) return null;
 

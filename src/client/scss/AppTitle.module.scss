@@ -1,0 +1,16 @@
+.title {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  line-height: 1em;
+  user-select: none;
+  font-weight: normal;
+
+  .image {
+    width: 1em;
+    height: 1em;
+    margin-right: .25em;
+  }
+}

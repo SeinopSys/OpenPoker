@@ -1,13 +1,23 @@
+'use client';
 import useSWR from 'swr';
 import { UserInfoDto } from '../../server/users/dto/user-info.dto';
+import { useAuthenticatedSocket } from './useAuthenticatedScoket';
 
-export const useUserInfo = () =>
-  useSWR(
-    '/users/me',
+export const useUserInfo = () => {
+  const { socket, connected } = useAuthenticatedSocket();
+  return useSWR(
+    connected ? 'users.findMe' : null,
     (key) =>
-      fetch(key).then<UserInfoDto>((r) =>
-        r.ok ? r.json() : Promise.reject(r),
-      ),
+      new Promise<UserInfoDto>((res, rej) => {
+        socket.timeout(5e3).emit(key, (err, response) => {
+          if (err || !response) {
+            rej(err);
+            return;
+          }
+
+          res(response);
+        });
+      }),
     {
       refreshInterval: 10e3,
       refreshWhenHidden: false,
@@ -15,3 +25,4 @@ export const useUserInfo = () =>
       keepPreviousData: true,
     },
   );
+};

@@ -1,13 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GithubUsersService } from '../github-users/github-users.service';
-import { UsersService } from '../users/users.service';
+import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
 import { EntityManager } from 'typeorm';
-import { User } from '../users/entities/user.entity';
-import { GithubUser } from '../github-users/entities/github-user.entity';
 import { GithubRestService } from '../github-rest/github-rest.service';
-import {
-  RestEndpointMethodTypes,
-} from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
+import { GithubUser } from '../github-users/entities/github-user.entity';
+import { GithubUsersService } from '../github-users/github-users.service';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -22,11 +20,11 @@ export class AuthService {
     this.logger.debug(`Creating default GitHub API REST client…`);
   }
 
-  getGithubUserInfo(params: { userId?: string; accessToken?: string }) {
+  async getGithubUserInfo(params: { userId?: string; accessToken?: string }) {
     this.logger.debug(`Getting GitHub API REST client…`);
-    const effectiveClient = params.accessToken
+    const effectiveClient = await (params.accessToken
       ? this.githubRestService.clientFactory(params.accessToken)
-      : this.githubRestService.defaultClient;
+      : this.githubRestService.defaultClient);
     this.logger.debug(
       `Retrieving GitHub user info ${
         params.accessToken ? 'via access token' : `for user ID ${params.userId}`
@@ -58,9 +56,7 @@ export class AuthService {
       },
       false,
     );
-    this.logger.debug(
-      `Saving information for GitHub user (${githubUser.id})…`,
-    );
+    this.logger.debug(`Saving information for GitHub user (${githubUser.id})…`);
     await this.entityManager.transaction(async (em) => {
       if (options.existingUser) {
         this.logger.debug(

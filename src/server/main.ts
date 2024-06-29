@@ -1,14 +1,11 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { serverEnv } from './server-env';
 import { CorrelationIdMiddleware } from '@eropple/nestjs-correlation-id';
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
-import session from 'express-session';
-import { retrieveSessionSecret } from './utils/retrieve-session-secret';
-import { retrieveSessionStore } from './utils/retrieve-session-store';
-import { Temporal } from '@js-temporal/polyfill';
+import { AppModule } from './app.module';
+import { serverEnv } from './server-env';
+import { createSessionMiddleware } from './utils/session-middleware';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -18,21 +15,7 @@ export async function bootstrap() {
     }),
   );
   const logger = app.get(Logger);
-  app.use(
-    session({
-      secret: (await retrieveSessionSecret(logger)).toString('hex'),
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        path: '/',
-        httpOnly: true,
-        secure: serverEnv.SESSION_COOKIE_SECURE,
-        sameSite: true,
-        maxAge: Temporal.Duration.from({ days: 7 }).total('millisecond'),
-      },
-      store: await retrieveSessionStore(logger),
-    }),
-  );
+  app.use(await createSessionMiddleware(logger));
 
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
   app.useLogger(logger);
